@@ -97,15 +97,15 @@ class Train
     @current_station = 0
   end
 
-  def next_station
+  def go_next_station
     @current_station += 1 if @current_station < @route.length - 1
   end
 
-  def previous_station
+  def go_prev_station
     @current_station -= 1 if @current_station > 0
   end
 
-  def show_next_station
+  def next_station
      if @current_station == @route.length - 1
       puts "Это последняя станция"
     else
@@ -114,7 +114,7 @@ class Train
     end
   end
 
-  def show_prev_station
+  def prev_station
     if @current_station == 0
       puts "Это первая станция"
     else

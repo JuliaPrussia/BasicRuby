@@ -7,11 +7,10 @@ class Station
   end
 
   def add_train(train)
-    unless @trains.include?train.type
+    unless @trains.include?(train.type)
       @trains[train.type] = []
     end
       @trains[train.type].push(train)
-      puts "Прибыл поезд #{train.type} #{train.num}"
   end
 
    def delete_train(train)
@@ -19,16 +18,11 @@ class Station
    end
 
    def print_type_train(type)
-     puts "Список #{type} поездов:"
-     @trains[type].each{|train| puts train.num}
+     @trains[type].each{|train| return train.num}
    end
 
    def print_all_train
-     puts "Список всех поездов на станции:"
-     #При получение массива значений(@trains.values)Почему то становится не доступен
-     #метод ".num". Не очень понимаю, почему.
-     # @trains.values.each{|i| puts i.num}
-     @trains.keys.each{ |type| @trains[type].each { |train| puts train.num}}
+     @trains.keys.each{ |type| @trains[type].each { |train| return train.num}}
    end
 end
 
@@ -98,28 +92,30 @@ class Train
   end
 
   def go_next_station
-    @current_station += 1 if @current_station < @route.length - 1
+    if @current_station < @route.length - 1
+      @route[@current_station].delete_train(self)
+      @current_station += 1
+      @route[@current_station].add_train(self)
+    end
   end
 
   def go_prev_station
-    @current_station -= 1 if @current_station > 0
+    if @current_station > 0
+      @route[@current_station].delete_train(self)
+      @current_station -= 1
+      @route[@current_station].add_train(self)
+    end
   end
 
   def next_station
-     if @current_station == @route.length - 1
-      puts "Это последняя станция"
-    else
-      next_station = @route[@current_station + 1]
-      puts "Следущая станция: #{next_station}"
-    end
+    return @route[@current_station + 1] unless @current_station == @route.length - 1
   end
 
   def prev_station
-    if @current_station == 0
-      puts "Это первая станция"
-    else
-      prev_station = @route[@current_station - 1]
-      puts "Предыдущая станция: #{prev_station}"
-    end
+    return @route[@current_station - 1] unless @current_station == 0
+  end
+
+  def current_station
+    return @route[@current_station]
   end
 end

@@ -3,31 +3,30 @@ class Station
 
   def initialize(name)
     @name = name
-    @trains ={}
+    @trains =[]
   end
 
   def add_train(train)
-    unless @trains.include?(train.type)
-      @trains[train.type] = []
-    end
-      @trains[train.type].push(train)
+      @trains.push(train)
   end
 
    def delete_train(train)
-     @trains[train.type].delete(train)
+     @trains.delete(train)
    end
 
-   def print_type_train(type)
-     @trains[type].each{|train| return train.num}
+   def all_train_type(type)
+     trains_type = []
+     @trains.each{|train| trains_type.push(train) if train.type == type}
+     return trains_type
    end
 
-   def print_all_train
-     @trains.keys.each{ |type| @trains[type].each { |train| return train.num}}
+   def all_train
+     @trains
    end
 end
 
 class Route
-  attr_accessor :stations
+  attr_reader :stations
 
   def initialize(start, ending)
     @stations =[start, ending]
@@ -42,18 +41,17 @@ class Route
       @stations.delete(station)
     end
   end
-  def all_station
+  def show_all_station
     @stations.each{|station| puts station}
   end
 end
 
 class Train
-  attr_reader :num
-              :type
-              :route
-              :train_cars
+  attr_reader :num,
+              :type,
+              :route,
+              :train_cars,
               :speed
-              :current_station
 
   def initialize(num, type, train_cars)
     @num = num
@@ -83,39 +81,40 @@ class Train
   end
 
   def all_train_cars
-    return @train_cars
+    @train_cars
   end
   #маршрут
   def accept_route(route)
-    @route = route.stations
+    @route = route
     @current_station = 0
+    self.current_station.add_train(self)
   end
 
   def go_next_station
-    if @current_station < @route.length - 1
-      @route[@current_station].delete_train(self)
+    if next_station
+      self.current_station.delete_train(self)
       @current_station += 1
-      @route[@current_station].add_train(self)
+      self.current_station.add_train(self)
     end
   end
 
   def go_prev_station
-    if @current_station > 0
-      @route[@current_station].delete_train(self)
+    if prev_station
+      self.current_station.delete_train(self)
       @current_station -= 1
-      @route[@current_station].add_train(self)
+      self.current_station.add_train(self)
     end
   end
 
   def next_station
-    return @route[@current_station + 1] unless @current_station == @route.length - 1
+    return @route.stations[@current_station + 1] unless @current_station == @route.stations.length - 1
   end
 
   def prev_station
-    return @route[@current_station - 1] unless @current_station == 0
+    return @route.stations[@current_station - 1] unless @current_station == 0
   end
 
   def current_station
-    return @route[@current_station]
+    @route.stations[@current_station]
   end
 end

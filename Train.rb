@@ -5,10 +5,10 @@ class Train
               :train_cars,
               :speed
 
-  def initialize(num, type, train_cars)
+  def initialize(num, type)
     @num = num
     @type = type
-    @train_cars = train_cars
+    @train_cars = []
     @speed = 0
   end
 # cкорость
@@ -24,18 +24,18 @@ class Train
     @speed = 0
   end
 #вагоны
-  def add_train_cars
-      @train_cars += 1 if @speed == 0
+  def add_train_cars(carriage)
+      @train_cars.push(carriage) if @speed == 0 && carriage.type = @type
   end
 
-  def remove_train_cars
-      @train_cars -= 1 if @speed == 0 && @train_cars > 0
+  def remove_train_cars(carriage)
+      @train_cars.delete(carriage) if @speed == 0 && @train_cars > 0 && carriage.type = @type
   end
 
   def all_train_cars
     @train_cars
   end
-  #маршрут
+#маршрут
   def accept_route(route)
     @route = route
     @current_station = 0
@@ -58,15 +58,17 @@ class Train
     end
   end
 
+  def current_station
+    @route.stations[@current_station]
+  end
+
+  private
+  # вспомагательные методы класса. Для передвижения по станция используются методы выше
   def next_station
     @route.stations[@current_station + 1] unless current_station == @route.last_station
   end
 
   def prev_station
     @route.stations[@current_station - 1] unless current_station == @route.first_station
-  end
-
-  def current_station
-    @route.stations[@current_station]
   end
 end

@@ -1,5 +1,6 @@
 class Station
-  attr_reader :name
+  attr_reader :name,
+              :trains
 
   def initialize(name)
     @name = name
@@ -15,13 +16,7 @@ class Station
    end
 
    def all_train_type(type)
-     trains_type = []
-     @trains.each{|train| trains_type.push(train) if train.type == type}
-     return trains_type
-   end
-
-   def all_train
-     @trains
+     @trains.select{|train| train.type == type}
    end
 end
 
@@ -41,9 +36,19 @@ class Route
       @stations.delete(station)
     end
   end
+
   def show_all_station
     @stations.each{|station| puts station}
   end
+
+  def first_station
+    @stations[0]
+  end
+
+  def last_station
+    @stations[@stations.length-1]
+  end
+
 end
 
 class Train
@@ -107,11 +112,11 @@ class Train
   end
 
   def next_station
-    return @route.stations[@current_station + 1] unless @current_station == @route.stations.length - 1
+    @route.stations[@current_station + 1] unless current_station == @route.last_station
   end
 
   def prev_station
-    return @route.stations[@current_station - 1] unless @current_station == 0
+    @route.stations[@current_station - 1] unless current_station == @route.first_station
   end
 
   def current_station

@@ -25,11 +25,11 @@ class Train
   end
 #вагоны
   def add_train_cars(carriage)
-      @train_cars.push(carriage) if @speed == 0 && carriage.type = @type
+      @train_cars.push(carriage) if @speed == 0 && carriage.type == @type
   end
 
   def remove_train_cars(carriage)
-      @train_cars.delete(carriage) if @speed == 0 && @train_cars > 0 && carriage.type = @type
+      @train_cars.delete(carriage) if @speed == 0 && @train_cars.length > 0 && carriage.type == @type
   end
 
   def all_train_cars

@@ -1,5 +1,6 @@
 class CargoCarriage < Carriage
-  def initialize(num, type = "cargo")
+  def initialize(num)
     super
+    @type = "cargo"
   end
 end

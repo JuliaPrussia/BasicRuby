@@ -5,9 +5,9 @@ class Train
               :train_cars,
               :speed
 
-  def initialize(num, type)
+  def initialize(num)
     @num = num
-    @type = type
+    @type
     @train_cars = []
     @speed = 0
   end
@@ -25,7 +25,7 @@ class Train
   end
 #вагоны
   def add_train_cars(carriage)
-      @train_cars.push(carriage) if @speed == 0 && carriage.type == @type
+      @train_cars.push(carriage) if @speed == 0
   end
 
   def remove_train_cars(carriage)
@@ -39,22 +39,22 @@ class Train
   def accept_route(route)
     @route = route
     @current_station = 0
-    self.current_station.add_train(self)
+    current_station.add_train(self)
   end
 
   def go_next_station
     if next_station
-      self.current_station.delete_train(self)
+      current_station.delete_train(self)
       @current_station += 1
-      self.current_station.add_train(self)
+      current_station.add_train(self)
     end
   end
 
   def go_prev_station
     if prev_station
-      self.current_station.delete_train(self)
+      current_station.delete_train(self)
       @current_station -= 1
-      self.current_station.add_train(self)
+      current_station.add_train(self)
     end
   end
 

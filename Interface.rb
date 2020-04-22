@@ -192,7 +192,7 @@ class Interface
     puts 'Введите имя добавляемого маршрута(или exit для выхода):'
     name = name_route
     route = @route[name]
-    unless train == nil || name ==nil
+    unless train == nil || name == nil
       train[0].accept_route(route)
       puts "Поезду #{train[0].num} #{train[0].type} был добавлен маршрут #{name}"
     end
@@ -200,7 +200,7 @@ class Interface
 
   def search_train
     loop do
-      train_num = gets.chomp.to_i
+      train_num = gets.chomp
       train = @trains.select{|train| train.num == train_num}
       if train_num == 'exit'
         break

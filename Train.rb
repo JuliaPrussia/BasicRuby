@@ -29,7 +29,7 @@ class Train
   end
 
   def remove_train_cars(carriage)
-      @train_cars.delete(carriage) if @speed == 0 && @train_cars.length > 0 && carriage.type == @type
+      @train_cars.delete(carriage) if @speed == 0 
   end
 
   def all_train_cars

@@ -10,16 +10,18 @@ class Train
               :route,
               :train_cars,
               :speed
+              :trains
 
-    class << self; attr_accessor :trains end
-    @trains = {}
+    # class << self; attr_accessor :trains end
+
+    @@trains = {}
 
   def initialize(num)
     @num = num
     @type
     @train_cars = []
     @speed = 0
-    self.class.trains[num] = self
+    @@trains[@num] = self
     register_instance
   end
 # cкорость

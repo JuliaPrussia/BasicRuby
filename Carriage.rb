@@ -1,7 +1,6 @@
-require_relative 'Modules'
-
 class Carriage
-  include ManufacturerCompany
+  include manufacturerCompany
+
   attr_reader :num,
               :type
 

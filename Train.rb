@@ -1,9 +1,6 @@
-require_relative 'Modules'
-
 class Train
-
-  include ManufacturerCompany
-  include InstanceCounter
+  include manufacturerCompany
+  include instanceCounter
 
   attr_reader :num,
               :type,
@@ -12,9 +9,7 @@ class Train
               :speed
               :trains
 
-    # class << self; attr_accessor :trains end
-
-    @@trains = {}
+  @@trains = {}
 
   def initialize(num)
     @num = num
@@ -76,7 +71,7 @@ class Train
   end
 
   def self.find(num)
-    @trains[num]
+    @@trains[num]
   end
 
   private

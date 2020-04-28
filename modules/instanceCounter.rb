@@ -1,11 +1,11 @@
-module instanceCounter
+module InstanceCounter
 
   def self.included(receiver)
-    receiver.extend         classMethods
-    receiver.send :include, instanceMethods
+    receiver.extend         ClassMethods
+    receiver.send :include, InstanceMethods
   end
-  
-  module classMethods
+
+  module ClassMethods
     def instances_count
       @instances ||= 0
       @instances += 1
@@ -16,8 +16,7 @@ module instanceCounter
    end
   end
 
-  module instanceMethods
-
+  module InstanceMethods
     private
     def register_instance
       self.class.instances_count

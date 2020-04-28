@@ -9,8 +9,8 @@ require_relative 'CargoCarriage'
 require_relative 'Interface'
 
 #модули
-require_relative 'modules/manufacturerCompany.rb'
-require_relative 'modules/instanceCounter.rb'
+require_relative 'modules/ManufacturerCompany.rb'
+require_relative 'modules/InstanceCounter.rb'
 
 interface = Interface.new
 interface.start

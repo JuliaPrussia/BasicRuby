@@ -1,6 +1,6 @@
 class Train
-  include manufacturerCompany
-  include instanceCounter
+  include ManufacturerCompany
+  include InstanceCounter
 
   attr_reader :num,
               :type,

@@ -1,4 +1,9 @@
 class Interface
+  TRAIN_TYPES = {
+                :cargo     => CargoTrain,
+                :passenger => PassengerTrain
+              }
+
   def initialize
     @stations = []
     @trains = []
@@ -60,36 +65,29 @@ class Interface
   def new_station
     puts 'Введите имя станции:'
     station_name = gets.chomp
-    station = Station.new(station_name)
-    @stations.push(station)
+    @stations.push(Station.new(station_name))
     puts "Станция #{station_name} была создана"
   end
 
   def new_train
-    type = nil
-    loop do
-      puts 'Введите тип поезда(passanger/cargo)'
-      type = gets.chomp
-      if type != 'passanger' && type != 'cargo'
-        puts 'Такой тип поезда не найден, повторите попытку'
-      else
-        break
-      end
+    puts 'Введите тип поезда(passanger/cargo)'
+    type = gets.chomp.to_sym
+
+    puts 'Введите номер поезда(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра):'
+    num = gets.chomp
+
+    train_class = TRAIN_TYPES[type]
+    if train_class
+      @trains.push(train_class.new(num))
+      puts "Был создан поезд типа #{type} с номером #{num}"
+    else
+      puts "Такого типа поезда нет"
     end
 
-    puts 'Введите номер поезда:'
-    num = gets.chomp.to_i
-
-    case type
-    when 'passanger'
-      train = PassengerTrain.new(num)
-      puts "Был создан поезд типа #{type} с номером #{num}"
-      @trains.push(train)
-    when 'cargo'
-      train = CargoTrain.new(num)
-      puts "Был создан поезд типа #{type} с номером #{num}"
-      @trains.push(train)
-    end
+    rescue StandardError => e
+      puts"#{e.message}"
+      puts "попробуйте еще раз"
+    retry
   end
 
   def new_route

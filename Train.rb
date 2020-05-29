@@ -13,12 +13,14 @@ class Train
               :trains
 
   @@trains = {}
+  NUM_TEMPLATE = /^[a-z\d]{3}-*[a-z\d]{2}$/
 
   def initialize(num)
     @num = num
     @type
     @train_cars = []
     @speed = 0
+    validate!
     @@trains[@num] = self
     register_instance
   end
@@ -75,6 +77,12 @@ class Train
 
   def self.find(num)
     @@trains[num]
+  end
+
+  protected
+
+  def validate!
+    raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" unless @num =~ NUM_TEMPLATE
   end
 
   private

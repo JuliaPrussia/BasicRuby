@@ -1,15 +1,26 @@
+require_relative 'modules/manufacturer_company'
+require_relative 'modules/instance_counter'
+
 class Train
+  include ManufacturerCompany
+  include InstanceCounter
+
   attr_reader :num,
               :type,
               :route,
               :train_cars,
               :speed
+              :trains
+
+  @@trains = {}
 
   def initialize(num)
     @num = num
     @type
     @train_cars = []
     @speed = 0
+    @@trains[@num] = self
+    register_instance
   end
 # cкорость
   def increase_speed(speed)
@@ -29,7 +40,7 @@ class Train
   end
 
   def remove_train_cars(carriage)
-      @train_cars.delete(carriage) if @speed == 0 
+      @train_cars.delete(carriage) if @speed == 0
   end
 
   def all_train_cars
@@ -60,6 +71,10 @@ class Train
 
   def current_station
     @route.stations[@current_station]
+  end
+
+  def self.find(num)
+    @@trains[num]
   end
 
   private

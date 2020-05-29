@@ -7,6 +7,13 @@ class Station
   include InstanceCounter
 
   @@stations = []
+
+  class << self
+    def all
+      @@stations
+    end
+  end
+
   def initialize(name)
     @name = name
     @trains =[]
@@ -24,9 +31,5 @@ class Station
 
    def all_train_type(type)
      @trains.select{|train| train.type == type}
-   end
-
-   def all
-     @@stations
    end
 end

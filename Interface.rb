@@ -41,6 +41,11 @@ class Interface
           puts 'Нужно ввести число от 0 до 9 для выбора пункта меню'
         end
       end
+
+    rescue StandardError => e
+      puts"#{e.message}"
+      puts "попробуйте еще раз"
+    retry
   end
 
   private #методы ниже не предназначены для вызова из вне
@@ -63,7 +68,7 @@ class Interface
   end
 
   def new_station
-    puts 'Введите имя станции:'
+    puts 'Введите имя станции(Может содержать буквы кирилического и латинского алфавита, а так же цифры. Длина 3-16 символов):'
     station_name = gets.chomp
     @stations.push(Station.new(station_name))
     puts "Станция #{station_name} была создана"
@@ -72,22 +77,14 @@ class Interface
   def new_train
     puts 'Введите тип поезда(passanger/cargo)'
     type = gets.chomp.to_sym
+    raise "Такого типа поезда нет" unless type == :passanger || type == :cargo
 
     puts 'Введите номер поезда(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра):'
     num = gets.chomp
 
     train_class = TRAIN_TYPES[type]
-    if train_class
-      @trains.push(train_class.new(num))
-      puts "Был создан поезд типа #{type} с номером #{num}"
-    else
-      puts "Такого типа поезда нет"
-    end
-
-    rescue StandardError => e
-      puts"#{e.message}"
-      puts "попробуйте еще раз"
-    retry
+    @trains.push(train_class.new(num))
+    puts "Был создан поезд типа #{type} с номером #{num}"
   end
 
   def new_route
@@ -99,10 +96,11 @@ class Interface
       when 1
         puts 'Введите желаемое имя маршрута(необходим для более удобного поиска)'
         route_name = gets.chomp
+        raise "Имя маршрута не может быть пустым!" if route_name == ""
 
-        puts 'Введите имя начальной станции (или exit для выхода):'
+        puts 'Введите имя начальной станции:'
         start_station = search_station
-        puts 'Введите имя конечной станции (или exit для выхода):'
+        puts 'Введите имя конечной станции:'
         end_station = search_station
 
         unless start_station == nil || end_station == nil
@@ -112,11 +110,11 @@ class Interface
         end
 
       when 2
-        puts 'Введите имя измняемого маршрута(или exit для выхода):'
+        puts 'Введите имя измняемого маршрута:'
         name = name_route
         route = @route[name]
 
-        puts 'Введите имя станции которую желаете добавить к маршруту(или exit для выхода):'
+        puts 'Введите имя станции которую желаете добавить к маршруту:'
         name_station = search_station
 
         unless name_station == nil || route == nil
@@ -125,11 +123,11 @@ class Interface
         end
 
       when 3
-        puts 'Введите имя измняемого маршрута(или exit для выхода):'
+        puts 'Введите имя измняемого маршрута:'
         name = name_route
         route = @route[name]
 
-        puts 'Введите имя станции которую желаете удалить из маршрута(или exit для выхода):'
+        puts 'Введите имя станции которую желаете удалить из маршрута:'
         name_station = search_station
 
         unless name_station == nil || route == nil
@@ -154,40 +152,25 @@ class Interface
   end
 
   def search_station
-    loop do
-        start_station_name = gets.chomp
-        start_station = @stations.select{|station| station.name == start_station_name}
-
-        if start_station_name == "exit"
-          break
-        elsif start_station.empty?
-          puts "Станция не обнаружена. Пожалуйста, сначал создайте станцию с именем #{start_station_name}"
-        else
-          return start_station
-          break
-        end
-      end
+      start_station_name = gets.chomp
+      raise "Имя не может быть пустым!" if start_station_name == ""
+      start_station = @stations.select{|station| station.name == start_station_name}
+      raise "Станция не обнаружена. Пожалуйста, сначал создайте станцию с именем #{start_station_name}" if start_station.empty?
+      return start_station
   end
 
   def name_route
-    loop do
-      route_name = gets.chomp
-      if route_name == 'exit'
-        break
-      elsif @route.keys.select{|name| name == route_name}.empty?
-        puts "Маршрут #{route_name} не найден. Пожалуйста, сначала создайте маршрут"
-      else
-        return route_name
-        break
-      end
-    end
+    route_name = gets.chomp
+    raise "Имя не может быть пустым!" if route_name == ""
+    raise "Маршрут #{route_name} не найден. Пожалуйста, сначала создайте маршрут" if @route.keys.select{|name| name == route_name}.empty?
+    return route_name
   end
 
   def set_train_route
-    puts 'введите номер поезда(или exit для выхода):'
+    puts 'введите номер поезда:'
     train = search_train
 
-    puts 'Введите имя добавляемого маршрута(или exit для выхода):'
+    puts 'Введите имя добавляемого маршрута:'
     name = name_route
     route = @route[name]
     unless train == nil || name == nil
@@ -197,35 +180,21 @@ class Interface
   end
 
   def search_train
-    loop do
-      train_num = gets.chomp
-      train = @trains.select{|train| train.num == train_num}
-      if train_num == 'exit'
-        break
-      elsif train.empty?
-        puts 'Данный поезд не найден'
-      else
-        return train
-        break
-      end
-    end
+    train_num = gets.chomp
+    raise "Номер не может быть пустым!" if train_num == ""
+    train = @trains.select{|train| train.num == train_num}
+    raise "Данный поезд не найден" if train.empty?
+    return train
   end
 
   def new_carriage
     type = nil
+    puts 'Введите тип вагона(passanger/cargo)'
+    type = gets.chomp
+    raise "Такой тип вагона не найден!" unless type == 'passanger' || type == 'cargo'
 
-    loop do
-      puts 'Введите тип вагона(passanger/cargo)'
-      type = gets.chomp
-      if type != 'passanger' && type != 'cargo'
-        puts 'Такой тип вагона не найден, повторите попытку'
-      else
-        break
-      end
-    end
-
-    puts 'Введите номер вагона:'
-    num = gets.chomp.to_i
+    puts 'Введите номер вагона(формат номера ххх, где х-строчная буква латинского алфавита или цифра):'
+    num = gets.chomp
 
     case type
     when 'passanger'
@@ -240,10 +209,10 @@ class Interface
   end
 
   def add_carriage_train
-    puts 'введите номер поезда(или exit для выхода):'
+    puts 'введите номер поезда:'
     train = search_train
 
-    puts 'Введите номер вагона(или exit для выхода):'
+    puts 'Введите номер вагона:'
     carriage = search_carriage
 
     unless train == nil || carriage == nil
@@ -253,25 +222,18 @@ class Interface
   end
 
   def search_carriage
-    loop do
-      num = gets.chomp
-      carriage = @carriages.select{|carriage| carriage.num == num.to_i}
-      if num == 'exit'
-        break
-      elsif carriage.empty?
-        puts 'Такой вагон не найден, повторите попытку'
-      else
-        return carriage
-        break
-      end
-    end
+    num = gets.chomp
+    raise "Номер не может быть пустым!" if train_num == ""
+    carriage = @carriages.select{|carriage| carriage.num == num.to_i}
+    raise "Такой вагон не найден!" if carriage.empty?
+    return carriage
   end
 
   def remove_carriage_train
-    puts 'введите номер поезда(или exit для выхода):'
+    puts 'введите номер поезда:'
     train = search_train
 
-    puts 'Введите номер вагона(или exit для выхода):'
+    puts 'Введите номер вагона:'
     carriage = search_carriage
 
     unless train == nil || carriage == nil
@@ -281,7 +243,7 @@ class Interface
   end
 
   def move_train
-    puts 'введите номер поезда(или exit для выхода):'
+    puts 'введите номер поезда:'
     train = search_train
     unless train == nil
       train[0].go_next_station
@@ -293,7 +255,7 @@ class Interface
     puts 'Список станций: '
     @stations.each{|station| puts station.name}
 
-    puts 'Список поездов какой станции вы хотите узнать?(exit для выхода) '
+    puts 'Список поездов какой станции вы хотите узнать?'
     station = search_station
     unless station == nil
       puts "Поезда на станции #{station[0].name}:"

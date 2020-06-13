@@ -1,9 +1,11 @@
 require_relative 'modules/manufacturer_company'
 require_relative 'modules/instance_counter'
+require_relative 'modules/validate'
 
 class Train
   include ManufacturerCompany
   include InstanceCounter
+  include Validate
 
   attr_reader :num,
               :type,
@@ -20,7 +22,7 @@ class Train
     @type
     @train_cars = []
     @speed = 0
-    validate!
+    valid?
     @@trains[@num] = self
     register_instance
   end

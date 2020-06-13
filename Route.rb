@@ -1,4 +1,8 @@
+require_relative 'modules/validate'
+
 class Route
+  include Validate
+
   attr_reader :stations
 
   def initialize(start, ending)
@@ -25,5 +29,11 @@ class Route
 
   def last_station
     @stations[@stations.length-1]
+  end
+
+  protected
+
+  def validate!
+    raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if @num =~ NUM_TEMPLATE
   end
 end

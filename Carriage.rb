@@ -1,9 +1,11 @@
 require_relative 'modules/manufacturer_company'
 require_relative 'modules/instance_counter'
+require_relative 'modules/validate'
 
 class Carriage
   include ManufacturerCompany
   include InstanceCounter
+  include Validate
 
   attr_reader :num,
               :type
@@ -13,6 +15,7 @@ class Carriage
   def initialize(num)
     @num = num
     @type
+    valid?
     register_instance
   end
 

@@ -1,10 +1,12 @@
 require_relative 'modules/instance_counter'
+require_relative 'modules/validate'
 
 class Station
   attr_reader :name,
               :trains
 
   include InstanceCounter
+  include Validate
 
   @@stations = []
   NAME_TEMPLATE = /^[A-zА-я\d]{3,16}$/
@@ -17,7 +19,7 @@ class Station
 
   def initialize(name)
     @name = name
-    validate!
+    valid?
     @trains =[]
     @@stations.push(self)
     register_instance

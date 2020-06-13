@@ -70,20 +70,27 @@ class Interface
   def new_station
     puts 'Введите имя станции(Может содержать буквы кирилического и латинского алфавита, а так же цифры. Длина 3-16 символов):'
     station_name = gets.chomp
-    @stations.push(Station.new(station_name))
+    station = Station.new(station_name)
+    raise "Неверный формат" if station.valid? == false #Имеет ли смысл выкидывать ошибку при такой валидации? просто мы можем обработать данную ошибку без падения программы.
+    @stations.push(station)
     puts "Станция #{station_name} была создана"
   end
 
   def new_train
     puts 'Введите тип поезда(passanger/cargo)'
     type = gets.chomp.to_sym
-    raise "Такого типа поезда нет" unless type == :passanger || type == :cargo
+    until type == :passanger || type == :cargo do
+      puts "Такого типа поезда нет! Введите корректнный тип поезда(passanger/cargo)"
+      type = gets.chomp.to_sym
+    end
 
     puts 'Введите номер поезда(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра):'
     num = gets.chomp
 
     train_class = TRAIN_TYPES[type]
-    @trains.push(train_class.new(num))
+    train = train_class.new(num)
+    raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if train.valid? == false
+    @trains.push(train)
     puts "Был создан поезд типа #{type} с номером #{num}"
   end
 
@@ -96,44 +103,49 @@ class Interface
       when 1
         puts 'Введите желаемое имя маршрута(необходим для более удобного поиска)'
         route_name = gets.chomp
-        raise "Имя маршрута не может быть пустым!" if route_name == ""
+        while route_name == "" do
+          puts "Имя маршрута не может быть пустым!"
+          route_name = gets.chomp
+        end
 
         puts 'Введите имя начальной станции:'
         start_station = search_station
+        return if start_station == nil
+
         puts 'Введите имя конечной станции:'
         end_station = search_station
+        return if end_station == nil
 
-        unless start_station == nil || end_station == nil
-          route = Route.new(start_station[0], end_station[0]) #принимаем за данность что имена уникальные. При необходимости, думаю, можно сделать проверку на уникальность
-          @route[route_name] = route
-          puts "был создан маршрут #{route_name} с начальной станцией #{start_station[0].name} и конечной #{end_station[0].name}"
-        end
+        route = Route.new(start_station[0], end_station[0]) #принимаем за данность что имена уникальные. При необходимости, думаю, можно сделать проверку на уникальность
+        raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if route.valid? == false
+        @route[route_name] = route
+        puts "был создан маршрут #{route_name} с начальной станцией #{start_station[0].name} и конечной #{end_station[0].name}"
 
       when 2
         puts 'Введите имя измняемого маршрута:'
         name = name_route
+        return if name == nil
         route = @route[name]
 
         puts 'Введите имя станции которую желаете добавить к маршруту:'
         name_station = search_station
+        return if name_station == nil
 
-        unless name_station == nil || route == nil
-          route.add_station(name_station[0])
-          puts "к маршруту #{name} была добавлена станция #{name_station[0].name}"
-        end
+        route.add_station(name_station[0])
+        puts "к маршруту #{name} была добавлена станция #{name_station[0].name}"
 
       when 3
         puts 'Введите имя измняемого маршрута:'
         name = name_route
+        return if name == nil
         route = @route[name]
 
         puts 'Введите имя станции которую желаете удалить из маршрута:'
         name_station = search_station
+        return if name_station == nil
 
-        unless name_station == nil || route == nil
-          route.delete_station(name_station[0])
-          puts "из маршрута #{name} была удалена станция #{name_station[0].name}"
-        end
+        route.delete_station(name_station[0])
+        puts "из маршрута #{name} была удалена станция #{name_station[0].name}"
 
       when 4
         break
@@ -153,45 +165,70 @@ class Interface
 
   def search_station
       start_station_name = gets.chomp
-      raise "Имя не может быть пустым!" if start_station_name == ""
+      while start_station_name == "" do
+        puts "Имя не может быть пустым! Введите корректное значение"
+        start_station_name = gets.chomp
+      end
       start_station = @stations.select{|station| station.name == start_station_name}
-      raise "Станция не обнаружена. Пожалуйста, сначал создайте станцию с именем #{start_station_name}" if start_station.empty?
-      return start_station
+      if start_station.empty?
+        puts "Станция не обнаружена. Пожалуйста, сначал создайте станцию с именем #{start_station_name}"
+        return
+      else
+        return start_station
+      end
   end
 
   def name_route
     route_name = gets.chomp
-    raise "Имя не может быть пустым!" if route_name == ""
-    raise "Маршрут #{route_name} не найден. Пожалуйста, сначала создайте маршрут" if @route.keys.select{|name| name == route_name}.empty?
-    return route_name
+    while route_name == "" do
+      puts "Имя не может быть пустым! Введите корректное имя"
+      route_name = gets.chomp
+    end
+    if @route.keys.select{|name| name == route_name}.empty?
+      puts "Маршрут #{route_name} не найден. Пожалуйста, сначала создайте маршрут"
+      return
+    else
+      return route_name
+    end
   end
 
   def set_train_route
     puts 'введите номер поезда:'
     train = search_train
+    return if train == nil
 
     puts 'Введите имя добавляемого маршрута:'
     name = name_route
+    return if name == nil
+
     route = @route[name]
-    unless train == nil || name == nil
-      train[0].accept_route(route)
-      puts "Поезду #{train[0].num} #{train[0].type} был добавлен маршрут #{name}"
-    end
+    train[0].accept_route(route)
+    puts "Поезду #{train[0].num} #{train[0].type} был добавлен маршрут #{name}"
   end
 
   def search_train
     train_num = gets.chomp
-    raise "Номер не может быть пустым!" if train_num == ""
+    while train_num == "" do
+      puts "Номер не может быть пустым! Введите корректнный номер."
+      train_num = gets.chomp
+    end
+
     train = @trains.select{|train| train.num == train_num}
-    raise "Данный поезд не найден" if train.empty?
-    return train
+    if train.empty?
+      puts "Данный поезд не найден"
+      return
+    else
+      return train
+    end
   end
 
   def new_carriage
-    type = nil
     puts 'Введите тип вагона(passanger/cargo)'
     type = gets.chomp
-    raise "Такой тип вагона не найден!" unless type == 'passanger' || type == 'cargo'
+    until type == "passanger" || type == "cargo" do
+      puts "Такой тип вагона не найден! Введите корректнный тип (passanger/cargo)"
+      type = gets.chomp
+    end
 
     puts 'Введите номер вагона(формат номера ххх, где х-строчная буква латинского алфавита или цифра):'
     num = gets.chomp
@@ -199,10 +236,12 @@ class Interface
     case type
     when 'passanger'
       сarriage = PassangerCarriage.new(num)
+      raise "Неверный формат номера!" if carriage.valid? == false
       puts "Был создан вагон типа #{type} с номером #{num}"
       @carriages.push(сarriage)
     when 'cargo'
       сarriage = CargoCarriage.new(num)
+      raise "Неверный формат номера!" if carriage.valid? == false
       puts "Был создан вагон типа #{type} с номером #{num}"
       @carriages.push(сarriage)
     end
@@ -211,35 +250,42 @@ class Interface
   def add_carriage_train
     puts 'введите номер поезда:'
     train = search_train
+    return if train == nil
 
     puts 'Введите номер вагона:'
     carriage = search_carriage
+    return if carriage == nil
 
-    unless train == nil || carriage == nil
-      train[0].add_train_cars(carriage[0])
-      puts "Поезду #{train[0].num} был добавлен вагон #{carriage[0].num}"
-    end
+    train[0].add_train_cars(carriage[0])
+    puts "Поезду #{train[0].num} был добавлен вагон #{carriage[0].num}"
   end
 
   def search_carriage
     num = gets.chomp
-    raise "Номер не может быть пустым!" if train_num == ""
+    while train_num == "" do
+      puts "Номер не может быть пустым! Введите корректнный номер"
+      num = gets.chomp
+    end
     carriage = @carriages.select{|carriage| carriage.num == num.to_i}
-    raise "Такой вагон не найден!" if carriage.empty?
-    return carriage
+    if carriage.empty?
+      puts "Такой вагон не найден!" if carriage.empty?
+      return
+    else
+      return carriage
+    end
   end
 
   def remove_carriage_train
     puts 'введите номер поезда:'
     train = search_train
+    return if train == nil
 
     puts 'Введите номер вагона:'
     carriage = search_carriage
+    return if carriage == nil
 
-    unless train == nil || carriage == nil
-      train[0].remove_train_cars(carriage[0])
-      puts "у поезда #{train[0].num} был удален вагон #{carriage[0].num}"
-    end
+    train[0].remove_train_cars(carriage[0])
+    puts "у поезда #{train[0].num} был удален вагон #{carriage[0].num}"
   end
 
   def move_train

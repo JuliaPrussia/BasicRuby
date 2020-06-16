@@ -15,7 +15,7 @@ class Carriage
   def initialize(num)
     @num = num
     @type
-    valid?
+    validate!
     register_instance
   end
 

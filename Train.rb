@@ -22,7 +22,7 @@ class Train
     @type
     @train_cars = []
     @speed = 0
-    valid?
+    validate!
     @@trains[@num] = self
     register_instance
   end

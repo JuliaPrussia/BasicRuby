@@ -7,6 +7,7 @@ class Route
 
   def initialize(start, ending)
     @stations =[start, ending]
+    validate!
   end
 
   def add_station(station)
@@ -34,6 +35,8 @@ class Route
   protected
 
   def validate!
-    raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if @num =~ NUM_TEMPLATE
+    raise "Начальная и конечная станция должны отличаться!" if @stations[0] == @stations.last
+    raise "Ошибка! Начальная станция не принадлежит классу 'Station'!" if @stations[0].class != Station
+    raise "Ошибка! Конечная станция не принадлежит классу 'Station'!" if @stations.last.class != Station
   end
 end

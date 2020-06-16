@@ -71,7 +71,6 @@ class Interface
     puts 'Введите имя станции(Может содержать буквы кирилического и латинского алфавита, а так же цифры. Длина 3-16 символов):'
     station_name = gets.chomp
     station = Station.new(station_name)
-    raise "Неверный формат" if station.valid? == false #Имеет ли смысл выкидывать ошибку при такой валидации? просто мы можем обработать данную ошибку без падения программы.
     @stations.push(station)
     puts "Станция #{station_name} была создана"
   end
@@ -89,7 +88,6 @@ class Interface
 
     train_class = TRAIN_TYPES[type]
     train = train_class.new(num)
-    raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if train.valid? == false
     @trains.push(train)
     puts "Был создан поезд типа #{type} с номером #{num}"
   end
@@ -116,10 +114,9 @@ class Interface
         end_station = search_station
         return if end_station == nil
 
-        route = Route.new(start_station[0], end_station[0]) #принимаем за данность что имена уникальные. При необходимости, думаю, можно сделать проверку на уникальность
-        raise "Неправильный формат номера!(формат номера ххх-хх, где х-строчная буква латинского алфавита или цифра)" if route.valid? == false
+        route = Route.new(start_station, end_station)
         @route[route_name] = route
-        puts "был создан маршрут #{route_name} с начальной станцией #{start_station[0].name} и конечной #{end_station[0].name}"
+        puts "был создан маршрут #{route_name} с начальной станцией #{start_station.name} и конечной #{end_station.name}"
 
       when 2
         puts 'Введите имя измняемого маршрута:'
@@ -131,8 +128,8 @@ class Interface
         name_station = search_station
         return if name_station == nil
 
-        route.add_station(name_station[0])
-        puts "к маршруту #{name} была добавлена станция #{name_station[0].name}"
+        route.add_station(name_station)
+        puts "к маршруту #{name} была добавлена станция #{name_station.name}"
 
       when 3
         puts 'Введите имя измняемого маршрута:'
@@ -144,8 +141,8 @@ class Interface
         name_station = search_station
         return if name_station == nil
 
-        route.delete_station(name_station[0])
-        puts "из маршрута #{name} была удалена станция #{name_station[0].name}"
+        route.delete_station(name_station)
+        puts "из маршрута #{name} была удалена станция #{name_station.name}"
 
       when 4
         break
@@ -169,8 +166,8 @@ class Interface
         puts "Имя не может быть пустым! Введите корректное значение"
         start_station_name = gets.chomp
       end
-      start_station = @stations.select{|station| station.name == start_station_name}
-      if start_station.empty?
+      start_station = @stations.find { |station| station.name == start_station_name}
+      if start_station == nil
         puts "Станция не обнаружена. Пожалуйста, сначал создайте станцию с именем #{start_station_name}"
         return
       else
@@ -236,12 +233,10 @@ class Interface
     case type
     when 'passanger'
       сarriage = PassangerCarriage.new(num)
-      raise "Неверный формат номера!" if carriage.valid? == false
       puts "Был создан вагон типа #{type} с номером #{num}"
       @carriages.push(сarriage)
     when 'cargo'
       сarriage = CargoCarriage.new(num)
-      raise "Неверный формат номера!" if carriage.valid? == false
       puts "Был создан вагон типа #{type} с номером #{num}"
       @carriages.push(сarriage)
     end
@@ -304,8 +299,8 @@ class Interface
     puts 'Список поездов какой станции вы хотите узнать?'
     station = search_station
     unless station == nil
-      puts "Поезда на станции #{station[0].name}:"
-      station[0].trains.each{|train| puts train.num}
+      puts "Поезда на станции #{station.name}:"
+      station.trains.each{|train| puts train.num}
     end
   end
 

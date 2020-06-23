@@ -12,7 +12,7 @@ class Carriage
 
   NUM_TEMPLATE = /^[a-z\d]{3}$/
 
-  def initialize(num)
+  def initialize(num, optional_argument = nil)
     @num = num
     @type
     validate!

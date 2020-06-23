@@ -81,6 +81,10 @@ class Train
     @@trains[num]
   end
 
+  def cars_in_block(&block)
+    @train_cars.each {|cars| block.call(cars)}
+  end
+
   protected
 
   def validate!

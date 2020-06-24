@@ -284,14 +284,14 @@ class Interface
       input = gets.chomp.to_i
       case input
       when 1
-        carriage.take_a_seat
+        carriage.takes_up_space
         puts "Посадочное место было успешно занято"
 
       when 2
-        puts "Колличество свободных мест равно #{carriage.all_free_seats}"
+        puts "Колличество свободных мест равно #{carriage.all_free_space}"
 
       when 3
-        puts "Колличество занятых мест равно #{carriage.all_occupied_seats}"
+        puts "Колличество занятых мест равно #{carriage.all_occupied_space}"
       end
 
     when 3
@@ -312,13 +312,13 @@ class Interface
         puts "Введите объем который желаете занять"
         capacity = gets.chomp.to_i
 
-        carriage.takes_up_capacity(capacity)
+        carriage.takes_up_space(capacity)
 
       when 2
-        puts "Колличество свободного объема равно #{carriage.all_free_capacity}"
+        puts "Колличество свободного объема равно #{carriage.all_free_space}"
 
       when 3
-        puts "Колличество занятого объема равно #{carriage.all_occupied_capacity}"
+        puts "Колличество занятого объема равно #{carriage.all_occupied_space}"
       end
 
     end

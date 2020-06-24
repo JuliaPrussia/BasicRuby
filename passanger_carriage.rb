@@ -1,25 +1,13 @@
 class PassangerCarriage < Carriage
   attr_reader :seats
 
-  def initialize(num, seats)
+  def initialize(num, space)
     @type = "passanger"
-    @seats = seats
-    @occupied_seats = 0
     super
   end
 
-  def take_a_seat
-    if @occupied_seats < @seats
-      @occupied_seats += 1
-   end
-  end
-
-  def all_occupied_seats
-    @occupied_seats
-  end
-
-  def all_free_seats
-    @seats - @occupied_seats
+  def takes_up_space(occupied = 1)
+    super
   end
 
   protected

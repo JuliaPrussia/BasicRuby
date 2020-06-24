@@ -1,25 +1,9 @@
 class CargoCarriage < Carriage
   attr_reader :capacity
 
-  def initialize(num, capacity)
+  def initialize(num, space)
     @type = "cargo"
-    @capacity = capacity
-    @occupied_capacity = 0
     super
-  end
-
-  def takes_up_capacity(capacity)
-    if @occupied_capacity < @capacity && capacity < @capacity - @occupied_capacity
-      @occupied_capacity += capacity
-    end
-  end
-
-  def all_free_capacity
-    @capacity - @occupied_capacity
-  end
-
-  def all_occupied_capacity
-    @occupied_capacity
   end
 
   protected

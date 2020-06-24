@@ -82,7 +82,7 @@ class Train
   end
 
   def cars_in_block(&block)
-    @train_cars.each {|cars| block.call(cars)}
+    @train_cars.each {|cars| yield(cars)}
   end
 
   protected

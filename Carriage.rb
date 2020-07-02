@@ -12,11 +12,27 @@ class Carriage
 
   NUM_TEMPLATE = /^[a-z\d]{3}$/
 
-  def initialize(num)
+  def initialize(num, space)
     @num = num
     @type
+    @space = space
+    @occupied_space = 0
     validate!
     register_instance
+  end
+
+  def takes_up_space(occupied)
+    if occupied <= all_free_space
+      @occupied_space += occupied
+    end
+  end
+
+  def all_free_space
+    @space - @occupied_space
+  end
+
+  def all_occupied_space
+    @occupied_space
   end
 
   protected
